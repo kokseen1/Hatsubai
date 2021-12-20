@@ -16,7 +16,11 @@ function date_sort(a, b) {
 function handle_urls(urls, socket) {
     console.log(urls)
     urls.forEach(url => {
-        socket.emit("get_data", url);
+        // socket.emit("get_data", url);
+        $.post('/get_data', { url: url }, function (item) {
+            console.log(item)
+            populate_chart(item);
+        });
     });
 }
 
@@ -90,7 +94,10 @@ $("#search-form").submit(function (e) {
     let strict = $("#strict").is(":checked");
     console.log(form_data);
     console.log(strict);
-    socket.emit("query", { "query": query, "qty": qty, "strict": strict });
+    $.post('/query', { query: query, qty: qty, strict: strict }, function (urls) {
+        handle_urls(urls)
+    });
+    // socket.emit("query", { "query": query, "qty": qty, "strict": strict });
 });
 
 
