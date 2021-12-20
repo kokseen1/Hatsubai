@@ -23,8 +23,8 @@ def from_pickle():
 
 def get_html(url):
     res = requests.get(url).text
-    with open(f"htmls/{time.time()}.html", "w", encoding="utf8") as f:
-        f.write(res)
+    # with open(f"htmls/{time.time()}.html", "w", encoding="utf8") as f:
+        # f.write(res)
     return res
 
 
@@ -51,8 +51,9 @@ def get_name_date_price(html):
         photo_url = re.findall(
             r"https://media.karousell.com/media/photos/products/.+?.jpg", html
         )
-        date_str = "/".join(photo_url[0].split("/")[6:9])
-        date = format_date(date_str)
+        date = "/".join(photo_url[0].split("/")[6:9])
+        # Date will be parsed in JS
+        # date = format_date(date_str)
         price_str = re.findall(r"S\$<!-- -->.+?</p><div>", html)
         price = price_str[0].strip("S$<!-- -->").rstrip("</p><div>").replace(",", "")
         name_str = re.findall(r'"name":".+?","offers"', html)
@@ -64,8 +65,8 @@ def get_name_date_price(html):
 
 
 def gen_plot(data_list):
-    data_list.sort(key=lambda x: x[1])
-    x_values = [x[1] for x in data_list]
+    data_list.sort(key=lambda x: format_date(x[1]))
+    x_values = [format_date(x[1]) for x in data_list]
     y_values = [float(x[2]) for x in data_list]
     ax = plt.gca()
     formatter = mdates.DateFormatter("%Y/%m/%d")
@@ -82,7 +83,7 @@ def gen_plot(data_list):
 
 
 def get_car_data(car_urls, keywords=[], delay=False):
-    print(car_urls)
+    # print(car_urls)
     data_list = []
     for url in car_urls:
         strict_fail = any([kw.lower() not in url for kw in keywords])
@@ -98,27 +99,24 @@ def get_car_data(car_urls, keywords=[], delay=False):
             continue
         data += tuple([url])
         data_list.append(data)
-        print("{}\n{}\n${}\n{}\n".format(*data))
+        # print("{}\n{}\n${}\n{}\n".format(*data))
     return data_list
 
 
-def main(d=0):
-    query = "er2se"
-    strict = True
-    if d:
-        with open("gsearch.html", "r", encoding="utf8") as f:
-            html = f.read()
-        with open("car.html", "r", encoding="utf8") as f:
-            res = f.read()
-    else:
-        html = gsearch(query, results=100)
+def main(query="er2se", strict=True, results=None, delay=False):
+    # with open("gsearch.html", "r", encoding="utf8") as f:
+    #     html = f.read()
+    # with open("car.html", "r", encoding="utf8") as f:
+    #     res = f.read()
+    html = gsearch(query, results)
     car_urls = get_valid_urls(html)
     keywords = []
     if strict:
         keywords = query.split()
-    data_list = get_car_data(car_urls, keywords, delay=False)
-    to_pickle(data_list)
-    gen_plot(data_list)
+    data_list = get_car_data(car_urls, keywords, delay)
+    # to_pickle(data_list)
+    # gen_plot(data_list)
+    return data_list
 
 
 def debug():
@@ -127,5 +125,5 @@ def debug():
 
 
 if __name__ == "__main__":
-    main()
-    # debug()
+    # main()
+    debug()

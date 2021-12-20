@@ -1,0 +1,15 @@
+#main-form-div {
+    padding-top: 10px;
+    justify-content: center;
+    text-align: center;
+}
+
+#chart-wrapper {
+    width: 90%;
+    margin: auto;
+}
+
+#search-btn{
+    background-color: transparent;
+    border-style: none;
+}
