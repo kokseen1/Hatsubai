@@ -15,11 +15,12 @@ function date_sort(a, b) {
 
 function handle_urls(urls, socket) {
     console.log(urls)
-    urls.forEach(url => {
+    urls.forEach((url, idx) => {
         // socket.emit("get_data", url);
         $.post('/get_data', { url: url }, function (item) {
             console.log(item)
             populate_chart(item);
+            if (idx == urls.length - 1) $("#search-btn").removeClass("spin");
         });
     });
 }
@@ -32,15 +33,25 @@ function init_chart() {
             datasets: [{
                 label: 'Price (S$)',
                 data: [],
-                borderColor: 'red'
+                borderColor: 'red',
+                // lineTension: 0.4
             }]
         },
         options: {
+            maintainAspectRatio: false,
             scales: {
                 x: {
+                    grid: {
+                        // display: false
+                    },
                     type: 'time',
                     time: {
                         tooltipFormat: 'DD MMM YYYY'
+                    }
+                },
+                y: {
+                    grid: {
+                        // display: false
                     }
                 }
             },
@@ -85,6 +96,7 @@ function populate_chart(item) {
 
 $("#search-form").submit(function (e) {
     e.preventDefault();
+    $("#search-btn").addClass("spin");
     myChart.data.datasets[0].data = [];
     myChart.update();
     let form = $(this);

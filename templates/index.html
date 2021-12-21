@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <meta name="description" content="View Historical Prices of Products">
     <title>Hatsubai</title>
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='/img/favicon.png')}}">
@@ -28,12 +28,12 @@
 <body>
     <div id="main-form-div">
         <form id="search-form">
-            <input type="text" id="search" name="search" placeholder="Search">
+            <input class="form-control-sm" type="text" id="search" name="search" placeholder="Search">
             <label for="qty">Max:</label>
-            <input type="number" id="qty" name="qty" value="10" min="10" max="100" step="10">
+            <input class="form-control-sm" type="number" id="qty" name="qty" value="10" min="10" max="100" step="10">
             <input type="checkbox" id="strict" name="strict" value="true" checked>
-            <label for="strict">Strict</label>
-            <input id="search-btn" class="btn-sm" type="submit" value="&#127822;">
+            <label class="form-check-label" for="strict">Strict</label>
+            <input id="search-btn" type="submit" value="&#127822;">
         </form>
         <div id="chart-wrapper">
             <canvas id="myChart"></canvas>
