@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <meta name="description" content="View Historical Prices of Products">
     <title>Hatsubai</title>
     <link rel="icon" type="image/x-icon" href="{{url_for('static', filename='/img/favicon.png')}}">
@@ -17,6 +17,12 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"
+        integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.0/chartjs-plugin-zoom.min.js"
+        integrity="sha512-TT0wAMqqtjXVzpc48sI0G84rBP+oTkBZPgeRYIOVRGUdwJsyS3WPipsNh///ay2LJ+onCM23tipnz6EvEy2/UA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
     <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"
@@ -28,13 +34,16 @@
 <body>
     <div id="main-form-div">
         <form id="search-form">
-            <input type="text" id="search" name="search" placeholder="Search">
+            <input class="form-control-sm" type="text" id="search" name="search" placeholder="Search">
             <label for="qty">Max:</label>
-            <input type="number" id="qty" name="qty" value="10" min="10" max="100" step="10">
+            <input class="form-control-sm" type="number" id="qty" name="qty" value="10" min="10" max="100" step="10">
             <input type="checkbox" id="strict" name="strict" value="true" checked>
-            <label for="strict">Strict</label>
-            <input id="search-btn" class="btn-sm" type="submit" value="&#127822;">
+            <label class="form-check-label" for="strict">Strict</label>
+            <input type="checkbox" id="use_api" name="use_api" value="true" checked>
+            <label class="form-check-label" for="use_api">API</label>
+            <input id="search-btn" type="submit" value="&#127822;">
         </form>
+        <button id="reset-btn">&#127821;</button>
         <div id="chart-wrapper">
             <canvas id="myChart"></canvas>
         </div>

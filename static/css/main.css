@@ -1,15 +1,45 @@
+html, body {
+    height: 100%;
+}
+
 #main-form-div {
     padding-top: 10px;
     justify-content: center;
     text-align: center;
+    height: 100%;
+}
+
+#search-form {
+    display: inline;
 }
 
 #chart-wrapper {
-    width: 90%;
+    width: 100%;
+    height: calc(100% - 40px);
     margin: auto;
 }
 
-#search-btn{
+#search-btn {
     background-color: transparent;
     border-style: none;
+}
+
+#reset-btn {
+    background-color: transparent;
+    border-style: none;
+    display: none;
+}
+
+.spin {
+    animation: spin 2s infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

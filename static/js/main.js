@@ -1,5 +1,5 @@
 let myChart;
-let socket;
+// let socket;
 
 function title_tooltip(tooltip_items) {
     return tooltip_items[0].raw.name;
@@ -13,11 +13,20 @@ function date_sort(a, b) {
     return a.date - b.date;
 }
 
-function handle_urls(urls, socket) {
+function handle_urls(urls, use_api) {
     console.log(urls)
-    urls.forEach(url => {
-        socket.emit("get_data", url);
+    urls.forEach((url, idx) => {
+        // socket.emit("get_data", url);
+        $.post('/get_data', { url: url, use_api: use_api }, function (item) {
+            console.log(item)
+            populate_chart(item);
+            if (idx == urls.length - 1) $("#search-btn").removeClass("spin");
+        });
     });
+}
+
+function show_reset_btn() {
+    $("#reset-btn").css("display", "inline");
 }
 
 function init_chart() {
@@ -28,15 +37,25 @@ function init_chart() {
             datasets: [{
                 label: 'Price (S$)',
                 data: [],
-                borderColor: 'red'
+                borderColor: 'red',
+                // lineTension: 0.4
             }]
         },
         options: {
+            maintainAspectRatio: false,
             scales: {
                 x: {
+                    grid: {
+                        // display: false
+                    },
                     type: 'time',
                     time: {
                         tooltipFormat: 'DD MMM YYYY'
+                    }
+                },
+                y: {
+                    grid: {
+                        // display: false
                     }
                 }
             },
@@ -54,6 +73,26 @@ function init_chart() {
                     callbacks: {
                         beforeTitle: title_tooltip,
                         afterTitle: url_tooltip
+                    }
+                },
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        onPanComplete() {
+                            show_reset_btn();
+                        }
+                    },
+                    zoom: {
+                        onZoomComplete() {
+                            show_reset_btn();
+                        },
+                        wheel: {
+                            enabled: true,
+                        },
+                        pinch: {
+                            enabled: true
+                        },
+                        mode: 'xy',
                     }
                 }
             },
@@ -81,6 +120,7 @@ function populate_chart(item) {
 
 $("#search-form").submit(function (e) {
     e.preventDefault();
+    $("#search-btn").addClass("spin");
     myChart.data.datasets[0].data = [];
     myChart.update();
     let form = $(this);
@@ -88,21 +128,30 @@ $("#search-form").submit(function (e) {
     let query = form_data[0].value;
     let qty = form_data[1].value;
     let strict = $("#strict").is(":checked");
+    let use_api = $("#use_api").is(":checked");
     console.log(form_data);
     console.log(strict);
-    socket.emit("query", { "query": query, "qty": qty, "strict": strict });
+    $.post('/query', { query: query, qty: qty, strict: strict }, function (urls) {
+        handle_urls(urls, use_api)
+    });
+    // socket.emit("query", { "query": query, "qty": qty, "strict": strict });
+});
+
+$("#reset-btn").click(function () {
+    myChart.resetZoom();
+    $("#reset-btn").hide();
 });
 
 
 $(document).ready(function () {
     init_chart();
 
-    socket = io.connect();
-    socket.on('urls', function (urls) {
-        handle_urls(urls, socket);
-    });
+    // socket = io.connect();
+    // socket.on('urls', function (urls) {
+    // handle_urls(urls, socket);
+    // });
 
-    socket.on("item", function (item) {
-        populate_chart(item.data);
-    });
+    // socket.on("item", function (item) {
+    // populate_chart(item.data);
+    // });
 });
