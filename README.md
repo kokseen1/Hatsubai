@@ -1,7 +1,7 @@
 # Hatsubai
 Historical Price Visualization
 
-![Screenshot](https://raw.githubusercontent.com/kokseen1/Hatsubai/main/sample.png)
+![Screenshot](https://raw.githubusercontent.com/kokseen1/Hatsubai/main/static/img/sample.png)
 
 # Features
 - Fine tune-able search
