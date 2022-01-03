@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
 from random import randint
 import time
+import dateutil.parser
 
 PICKLE_FILENAME = "data_list.pkl"
 
@@ -24,7 +25,7 @@ def from_pickle():
 def get_html(url):
     res = requests.get(url).text
     # with open(f"htmls/{time.time()}.html", "w", encoding="utf8") as f:
-        # f.write(res)
+    # f.write(res)
     return res
 
 
@@ -49,7 +50,8 @@ def format_date(date_str):
 def get_name_date_price(html):
     try:
         photo_url = re.findall(
-            r"https://media.karousell.com/media/photos/products/.+?.jpg", html
+            r"https://media.karousell.com/media/photos/products/[0-9]{4}/[0-9]{1,}/[0-9]{1,}",
+            html,
         )
         date = "/".join(photo_url[0].split("/")[6:9])
         # Date will be parsed in JS
@@ -63,6 +65,27 @@ def get_name_date_price(html):
     else:
         return name, date, price
 
+
+def iso_to_date(iso_str):
+    parsed = dateutil.parser.isoparse(iso_str)
+    return str(parsed.strftime("%Y/%m/%d"))
+
+
+def get_data_api(url):
+    print("USING API")
+    try:
+        item_id = url.split("-")[-1].strip("/")
+        item_api_url = (
+            f"https://www.carousell.sg/api-service/listing/3.1/listings/{item_id}/detail/"
+        )
+        resp_json = requests.get(item_api_url).json()
+        item_main_json = resp_json["data"]["screens"][0]["meta"]["default_value"]
+        title = item_main_json["title"]
+        date = iso_to_date(item_main_json["time_created"])
+        price = item_main_json["price"]
+        return (title, date, price)
+    except:
+        return
 
 def gen_plot(data_list):
     data_list.sort(key=lambda x: format_date(x[1]))

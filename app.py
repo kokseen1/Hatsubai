@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, jsonify
-from flask_socketio import SocketIO, emit
+
+# from flask_socketio import SocketIO, emit
 from main import *
 
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode="threading")
+# socketio = SocketIO(app, async_mode="threading")
 
 
 @app.route("/")
@@ -11,19 +12,19 @@ def index():
     return render_template("index.html")
 
 
-@socketio.event
-def connect():
-    print("client connected.")
+# @socketio.event
+# def connect():
+# print("client connected.")
 
 
-@app.route('/query', methods=['POST']) 
+@app.route("/query", methods=["POST"])
 # @socketio.on("query")
 # def handle_query(form_data):
-    # print(form_data)
+# print(form_data)
 def handle_query():
     query = request.values["query"]
     qty = request.values["qty"]
-    strict = request.values["strict"]
+    strict = request.values["strict"] == "true"
     # query = form_data.get("query")
     # qty = form_data.get("qty")
     # strict = form_data.get("strict")
@@ -47,21 +48,24 @@ def handle_query():
 
 
 # @socketio.on("get_data")
-@app.route('/get_data', methods=['POST']) 
+@app.route("/get_data", methods=["POST"])
 # def get_data(url):
 def get_data():
     url = request.values["url"]
-    print(url)
-    html = get_html(url)
-    item = get_name_date_price(html)
+    use_api = request.values["use_api"] == "true"
+    if use_api:
+        item = get_data_api(url)
+    else:
+        item = get_name_date_price(get_html(url))
     if not item:
         print(f"Skipped {url} [INVALID URL]")
         return
     item += tuple([url])
+    # ('Class D Fire Extinguisher 12kg', '2020/7/17', '0.10', 'https://www.carousell.sg/p/class-d-fire-extinguisher-12kg-1021336012')
     print(item)
     # emit("item", {"data": item})
     return jsonify(item)
 
 
 if __name__ == "__main__":
-    socketio.run(app,host="0.0.0.0",debug=True)
+    app.run(host="0.0.0.0", debug=True)

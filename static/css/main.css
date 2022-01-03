@@ -9,6 +9,10 @@ html, body {
     height: 100%;
 }
 
+#search-form {
+    display: inline;
+}
+
 #chart-wrapper {
     width: 100%;
     height: calc(100% - 40px);
@@ -18,6 +22,12 @@ html, body {
 #search-btn {
     background-color: transparent;
     border-style: none;
+}
+
+#reset-btn {
+    background-color: transparent;
+    border-style: none;
+    display: none;
 }
 
 .spin {
