@@ -113,7 +113,7 @@ function init_chart() {
 function populate_chart(item) {
     console.log(item)
     if (!item) return;
-    myChart.data.datasets[0].data.push({ date: moment(item[1], "YYYY/MM/DD"), price: item[2], name: item[0], url: item[3] });
+    myChart.data.datasets[0].data.push({ date: moment(item.date, "YYYY/MM/DD"), price: item.price, name: item.name, url: item.url });
     myChart.data.datasets[0].data.sort(date_sort);
     myChart.update();
 }

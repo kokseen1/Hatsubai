@@ -63,7 +63,11 @@ def get_name_date_price(html):
     except IndexError:
         return
     else:
-        return name, date, price
+        return {
+            "name": name, 
+            "date": date, 
+            "price": price,
+        }
 
 
 def iso_to_date(iso_str):
@@ -83,7 +87,11 @@ def get_data_api(url):
         title = item_main_json["title"]
         date = iso_to_date(item_main_json["time_created"])
         price = item_main_json["price"]
-        return (title, date, price)
+        return {
+            "name": title, 
+            "date": date, 
+            "price": price,
+        }
     except:
         return
 
