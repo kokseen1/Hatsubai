@@ -60,8 +60,13 @@ def get_data():
     if not item:
         print(f"Skipped {url} [INVALID URL]")
         return
-    item += tuple([url])
-    # ('Class D Fire Extinguisher 12kg', '2020/7/17', '0.10', 'https://www.carousell.sg/p/class-d-fire-extinguisher-12kg-1021336012')
+    item["url"] = url
+    # {
+    #     'name': 'Class D Fire Extinguisher 12kg', 
+    #     'date':'2020/7/17', 
+    #     'price':'0.10', 
+    #     'url':'https://www.carousell.sg/p/class-d-fire-extinguisher-12kg-1021336012'
+    # }
     print(item)
     # emit("item", {"data": item})
     return jsonify(item)
