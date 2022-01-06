@@ -13,13 +13,13 @@ function date_sort(a, b) {
     return a.date - b.date;
 }
 
-function handle_urls(urls, use_api) {
+function handle_urls(urls, use_api, sold_only) {
     console.log(urls)
     urls.forEach((url, idx) => {
         // socket.emit("get_data", url);
         $.post('/get_data', { url: url, use_api: use_api }, function (item) {
             console.log(item)
-            populate_chart(item);
+            if (!sold_only || item.status == "S") populate_chart(item);
             if (idx == urls.length - 1) $("#search-btn").removeClass("spin");
         });
     });
@@ -129,10 +129,11 @@ $("#search-form").submit(function (e) {
     let qty = form_data[1].value;
     let strict = $("#strict").is(":checked");
     let use_api = $("#use_api").is(":checked");
+    let sold_only = $("#sold_only").is(":checked");
     console.log(form_data);
     console.log(strict);
     $.post('/query', { query: query, qty: qty, strict: strict }, function (urls) {
-        handle_urls(urls, use_api)
+        handle_urls(urls, use_api, sold_only)
     });
     // socket.emit("query", { "query": query, "qty": qty, "strict": strict });
 });
