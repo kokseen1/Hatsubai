@@ -60,6 +60,9 @@ def get_name_date_price(html):
         price = price_str[0].strip("S$<!-- -->").rstrip("</p><div>").replace(",", "")
         name_str = re.findall(r'"name":".+?","offers"', html)
         name = name_str[0][8:-10]
+        sold_str = re.findall(r'<button[^>]*>Sold<\/button>', html)
+        reserved_str = re.findall(r'<button[^>]*>Reserve<\/button>', html)
+        status = "S" if sold_str else ("R" if reserved_str else "L")
     except IndexError:
         return
     else:
@@ -67,6 +70,7 @@ def get_name_date_price(html):
             "name": name, 
             "date": date, 
             "price": price,
+            "status": status,
         }
 
 
@@ -87,10 +91,12 @@ def get_data_api(url):
         title = item_main_json["title"]
         date = iso_to_date(item_main_json["time_created"])
         price = item_main_json["price"]
+        status = item_main_json["status"]
         return {
             "name": title, 
             "date": date, 
             "price": price,
+            "status": status,
         }
     except:
         return
