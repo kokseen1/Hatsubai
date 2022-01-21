@@ -19,19 +19,21 @@ html, body {
     margin: auto;
 }
 
-#search-btn {
+.button {
     background-color: transparent;
     border-style: none;
 }
 
-#reset-btn {
-    background-color: transparent;
-    border-style: none;
+#display-reset-btn, #chart-data-reset-btn {
     display: none;
 }
 
 .spin {
     animation: spin 2s infinite;
+}
+
+#help-text{
+    color: rgba(128, 128, 128, 0.712);
 }
 
 @keyframes spin {

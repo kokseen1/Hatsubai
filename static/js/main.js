@@ -1,4 +1,5 @@
 let myChart;
+let chartOriginalData = [];
 // let socket;
 
 function title_tooltip(tooltip_items) {
@@ -14,19 +15,24 @@ function date_sort(a, b) {
 }
 
 function handle_urls(urls, use_api, sold_only) {
-    console.log(urls)
+    chartOriginalData = [];
+    // console.log(urls)
     urls.forEach((url, idx) => {
         // socket.emit("get_data", url);
         $.post('/get_data', { url: url, use_api: use_api }, function (item) {
-            console.log(item)
+            // console.log(item)
             if (!sold_only || item.status == "S") populate_chart(item);
             if (idx == urls.length - 1) $("#search-btn").removeClass("spin");
         });
     });
 }
 
-function show_reset_btn() {
-    $("#reset-btn").css("display", "inline");
+function show_display_reset_btn() {
+    $("#display-reset-btn").css("display", "inline");
+}
+
+function show_chart_data_reset_btn() {
+    $("#chart-data-reset-btn").css("display", "inline");
 }
 
 function init_chart() {
@@ -79,12 +85,12 @@ function init_chart() {
                     pan: {
                         enabled: true,
                         onPanComplete() {
-                            show_reset_btn();
+                            show_display_reset_btn();
                         }
                     },
                     zoom: {
                         onZoomComplete() {
-                            show_reset_btn();
+                            show_display_reset_btn();
                         },
                         wheel: {
                             enabled: true,
@@ -101,17 +107,26 @@ function init_chart() {
                 intersect: false
             },
             onClick(e) {
+                if (myChart.data.datasets[0].data.length == 0) return;
+                let altPressed = e.native.altKey;
                 let activePoints = myChart.getElementsAtEventForMode(e, 'nearest', {
                     intersect: false
                 }, false);
-                window.open(activePoints[0].element.$context.raw.url, "_blank");
+                if (altPressed) {
+                    if (chartOriginalData.length == 0) chartOriginalData = myChart.data.datasets[0].data.slice();
+                    let selectedElemIdx = activePoints[0].index;
+                    myChart.data.datasets[0].data.splice(selectedElemIdx, 1);
+                    myChart.update();
+                    show_chart_data_reset_btn();
+                }
+                else { window.open(activePoints[0].element.$context.raw.url, "_blank"); }
             }
         }
     });
 }
 
 function populate_chart(item) {
-    console.log(item)
+    // console.log(item)
     if (!item) return;
     myChart.data.datasets[0].data.push({ date: moment(item.date, "YYYY/MM/DD"), price: item.price, name: item.name, url: item.url });
     myChart.data.datasets[0].data.sort(date_sort);
@@ -130,19 +145,24 @@ $("#search-form").submit(function (e) {
     let strict = $("#strict").is(":checked");
     let use_api = $("#use_api").is(":checked");
     let sold_only = $("#sold_only").is(":checked");
-    console.log(form_data);
-    console.log(strict);
+    // console.log(form_data);
+    // console.log(strict);
     $.post('/query', { query: query, qty: qty, strict: strict }, function (urls) {
         handle_urls(urls, use_api, sold_only)
     });
     // socket.emit("query", { "query": query, "qty": qty, "strict": strict });
 });
 
-$("#reset-btn").click(function () {
+$("#display-reset-btn").click(function () {
     myChart.resetZoom();
-    $("#reset-btn").hide();
+    $("#display-reset-btn").hide();
 });
 
+$("#chart-data-reset-btn").click(function () {
+    myChart.data.datasets[0].data = chartOriginalData.slice();
+    myChart.update();
+    $("#chart-data-reset-btn").hide();
+});
 
 $(document).ready(function () {
     init_chart();
